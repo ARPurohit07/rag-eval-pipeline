@@ -83,8 +83,8 @@ to include semantically close pairs (BM25 vs. vector search, fine-tuning vs. RAG
 prompting, quantization vs. distillation) specifically so retrieval quality is
 actually being tested, not just topic classification.
 
-`eval/eval_dataset.json` has 32 hand-written question/reference-answer pairs against
-this corpus, including one deliberately out-of-corpus question to check that the
+`eval/eval_dataset.json` has 100 hand-written question/reference-answer pairs against
+this corpus, including two deliberately out-of-corpus questions to check that the
 system says "I don't know" instead of hallucinating.
 
 ## Setup
@@ -156,28 +156,29 @@ judge quality bounds metric reliability.
 
 ## Results
 
-Latest run against all 32 eval questions, `top_k=5`, generation model `qwen2.5:7b`
+Latest run against all 100 eval questions, `top_k=5`, generation model `qwen2.5:7b`
 (local), judge model `gpt-oss:120b-cloud` (Ollama Cloud):
 
 | Metric | Score |
 |---|---|
-| Faithfulness | 0.942 |
-| Answer Relevancy | 0.921 |
-| Context Precision | 0.924 |
-| Context Recall | 1.000 |
+| Faithfulness | 0.932 |
+| Answer Relevancy | 0.920 |
+| Context Precision | 0.928 |
+| Context Recall | 0.970 |
 
-Context recall of 1.0 means the hybrid retriever surfaced every piece of information
-needed to answer each reference answer, across all 32 questions — i.e. retrieval was
-never the bottleneck in this run. Context precision of 0.924 shows the top-5 chunks
-were mostly, but not perfectly, on-topic. Faithfulness of 0.942 means a small fraction
-of generated claims weren't directly traceable to the retrieved context even though
-the right context was present — the more informative failure mode to chase next,
-since it's a generation-stage issue rather than a retrieval-stage one. Re-run
-`python -m eval.run_eval` after any change to chunking, `top_k`, fusion weights, or
-the generation model to see how these four numbers move independently — that
-independence is the point of decomposing the metrics this way.
+Context recall of 0.970 across 100 questions (versus a perfect 1.0 on an earlier, smaller
+32-question run) is the more credible number — at 3x the eval set size, a few genuine
+retrieval gaps surface that a smaller sample was too small to catch, which is exactly
+what a bigger, harder eval set is supposed to reveal. Context precision of 0.928 shows
+the top-5 chunks were mostly, but not perfectly, on-topic. Faithfulness of 0.932 means a
+small fraction of generated claims weren't directly traceable to the retrieved context
+even though the right context was present — still the single most informative failure
+mode to chase next, since it's a generation-stage issue rather than a retrieval-stage
+one. Re-run `python -m eval.run_eval` after any change to chunking, `top_k`, fusion
+weights, or the generation model to see how these four numbers move independently —
+that independence is the point of decomposing the metrics this way.
 
-Raw per-question output: `eval/results/ragas_results_20260912T175608Z.csv`.
+Raw per-question output: `eval/results/ragas_results_20260916T135234Z.csv`.
 
 ## Deploying it live
 
@@ -206,9 +207,9 @@ rag-eval-pipeline/
 │   ├── llm.py              # Ollama chat wrapper + grounded system prompt
 │   └── pipeline.py        # retrieve -> generate orchestration
 ├── eval/
-│   ├── eval_dataset.json  # 32 hand-written Q/reference-answer pairs
+│   ├── eval_dataset.json  # 100 hand-written Q/reference-answer pairs
 │   ├── run_eval.py         # runs pipeline + scores with RAGAS
-│   └── results/            # generated summaries/CSVs (gitignored)
+│   └── results/            # generated summaries/CSVs (tracked - real eval output)
 ├── app.py                 # Streamlit: chat + eval dashboard
 ├── api/main.py             # FastAPI: /query endpoint
 ├── tests/                  # unit tests (chunking, RRF fusion math)

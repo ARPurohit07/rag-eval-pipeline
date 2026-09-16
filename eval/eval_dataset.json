@@ -126,5 +126,277 @@
   {
     "question": "Does a system based on the corpus support quantum computing hardware design?",
     "ground_truth": "The provided context does not contain any information about quantum computing hardware design, so a faithful answer should state that this is not covered rather than guessing."
+  },
+  {
+    "question": "What are the two sub-layers of a Transformer block, and how is each one wrapped?",
+    "ground_truth": "A Transformer block consists of multi-head self-attention and a position-wise feed-forward network, each wrapped with a residual connection and layer normalization."
+  },
+  {
+    "question": "What's the difference between fixed sinusoidal positional encodings and rotary position embeddings (RoPE)?",
+    "ground_truth": "Sinusoidal encodings are fixed and added to the input embeddings. RoPE instead encodes position by rotating query and key vectors as a function of their position, which improves extrapolation to longer sequences than seen during training."
+  },
+  {
+    "question": "Why are encoder-only, decoder-only, and encoder-decoder Transformer variants suited to different tasks?",
+    "ground_truth": "Encoder-only models produce contextualized representations well suited to understanding tasks like classification and extraction (e.g. BERT). Decoder-only models generate autoregressively, suited to open-ended generation (e.g. GPT-style LLMs). Encoder-decoder models are used for sequence-to-sequence tasks such as translation and summarization (e.g. T5)."
+  },
+  {
+    "question": "What does FlashAttention change about how attention is computed?",
+    "ground_truth": "It restructures the attention computation to reduce memory reads and writes on the GPU without changing the mathematical result, addressing the systems-level memory cost of attention rather than eliminating its quadratic compute complexity."
+  },
+  {
+    "question": "What is the difference between self-attention and cross-attention?",
+    "ground_truth": "Self-attention is when queries, keys, and values all come from the same sequence. Cross-attention is when queries come from one sequence (e.g. a decoder) and keys/values come from a different sequence (e.g. an encoder's output), which is how encoder-decoder models condition generation on an input."
+  },
+  {
+    "question": "What makes key-value (KV) caching possible for autoregressive decoding?",
+    "ground_truth": "Because causal attention means past keys and values never change as new tokens are generated, they can be computed once and cached, so each new token only requires computing attention against the cached K/V pairs rather than recomputing them for the whole sequence."
+  },
+  {
+    "question": "What is the word2vec example commonly used to illustrate embedding vector arithmetic?",
+    "ground_truth": "Vector arithmetic on word embeddings can capture analogies: the vector for 'king' minus 'man' plus 'woman' lands close to the vector for 'queen.'"
+  },
+  {
+    "question": "How are modern sentence-embedding models typically trained?",
+    "ground_truth": "With a contrastive objective: embeddings of semantically similar texts (e.g. a question and its correct answer, or paraphrases) are pulled together in vector space, while embeddings of unrelated texts are pushed apart, often combining general contrastive pretraining with task-specific fine-tuning such as retrieval."
+  },
+  {
+    "question": "What is the dimensionality trade-off in choosing an embedding model?",
+    "ground_truth": "Higher-dimensional embeddings (768, 1024, or more) can encode more nuanced distinctions but cost more to store and search over, while smaller embeddings (384 or less) are cheaper and faster but may lose some discriminative power."
+  },
+  {
+    "question": "Why might a general-purpose embedding model struggle with specialized technical or legal text?",
+    "ground_truth": "Because it was trained mostly on general web text and never learned that specialized terms carry distinct meaning, it may fail to distinguish two sentences that differ only in specialized technical or legal terminology."
+  },
+  {
+    "question": "What parameters control the recall/speed tradeoff in HNSW and IVF indexes respectively?",
+    "ground_truth": "HNSW exposes ef_search (how many candidates to explore during a query) and m (how many graph edges per node); IVF exposes nprobe (how many clusters to search). Increasing any of these raises recall and latency together."
+  },
+  {
+    "question": "How does IVFPQ differ from plain IVF?",
+    "ground_truth": "IVFPQ combines IVF's clustering-based partitioning with product quantization to compress vectors, shrinking the index further at the cost of some additional recall."
+  },
+  {
+    "question": "What operational advantages does pgvector offer beyond raw search performance?",
+    "ground_truth": "Teams already running Postgres get vector search without introducing a separate database system, can join vector search results against relational metadata in a single SQL query, and get transactional guarantees plus existing backup and replication tooling for free."
+  },
+  {
+    "question": "According to the corpus, who coined the term Retrieval-Augmented Generation and when?",
+    "ground_truth": "The term was coined in a 2020 paper by Lewis et al., though the general idea of grounding generation in retrieved evidence predates that specific formulation."
+  },
+  {
+    "question": "What are some advanced RAG variants beyond basic retrieve-then-generate?",
+    "ground_truth": "Query rewriting or decomposition before retrieval, iterative or multi-hop retrieval where the model retrieves, reasons, and retrieves again, and re-ranking retrieved candidates with a cross-encoder model before generation."
+  },
+  {
+    "question": "What failure mode occurs when a RAG generator ignores correctly retrieved context?",
+    "ground_truth": "The generator can retrieve the right passage but ignore it in favor of its own parametric knowledge, producing an answer that isn't grounded in what was actually retrieved."
+  },
+  {
+    "question": "What role does inverse document frequency (IDF) play in BM25 scoring?",
+    "ground_truth": "IDF downweights common words like 'the' that appear everywhere and carry little discriminative signal, so a document scores highly for containing query terms that are frequent in it but rare across the whole corpus."
+  },
+  {
+    "question": "Does BM25 require model inference at query time?",
+    "ground_truth": "No. Beyond tokenization, BM25 requires no model inference at index or query time, which makes it cheap, fast, and fully interpretable."
+  },
+  {
+    "question": "How does BM25 compare to dense retrieval in production information retrieval systems?",
+    "ground_truth": "BM25 remains a strong and surprisingly competitive baseline, and production hybrid search systems commonly run it in parallel with dense vector search because the two methods tend to make different, largely uncorrelated mistakes."
+  },
+  {
+    "question": "What value is commonly used for the RRF constant k, and what does it do?",
+    "ground_truth": "Commonly 60. It's a small constant that dampens the influence of very low ranks in the fusion formula."
+  },
+  {
+    "question": "What is a common alternative to RRF when labeled relevance data is available?",
+    "ground_truth": "A weighted linear combination of min-max-normalized scores, which is tunable when there is enough labeled data to fit the weights against."
+  },
+  {
+    "question": "Why are cross-encoders unsuitable for first-stage retrieval over an entire corpus?",
+    "ground_truth": "They require one full forward pass per query-document pair, which is too slow to run over an entire corpus, so they are reserved for re-ranking a short candidate list narrowed down by a cheaper first-stage retriever."
+  },
+  {
+    "question": "What is the key difference between fixed-size chunking and recursive character/token splitting?",
+    "ground_truth": "Fixed-size chunking splits text every N tokens or characters regardless of structure. Recursive splitting instead tries a prioritized list of separators (paragraph breaks, then sentence breaks, then word breaks), falling back to a smaller separator only when a chunk is still too large, keeping chunks close to a target size while preferring natural boundaries."
+  },
+  {
+    "question": "How does semantic chunking decide where to split text?",
+    "ground_truth": "It embeds consecutive sentences and inserts a split wherever the similarity between adjacent sentences drops sharply, on the theory that a sharp drop signals a topic change."
+  },
+  {
+    "question": "What is a common mitigation for the precision-vs-context tradeoff in chunk sizing?",
+    "ground_truth": "Embedding and searching over small chunks for precision, but expanding each retrieved chunk to include its surrounding sentences or parent section before handing it to the generator, decoupling the unit of retrieval from the unit of context."
+  },
+  {
+    "question": "What is the key limitation of prompt engineering as a model adaptation method?",
+    "ground_truth": "It is bounded by the context window and by what the base model is already capable of — a prompt cannot teach a model facts it was never exposed to, and very long, complex instructions can be inconsistently followed by weaker models."
+  },
+  {
+    "question": "What is the difference between full fine-tuning and a parameter-efficient method like LoRA?",
+    "ground_truth": "Full fine-tuning updates all of a model's parameters and is expensive in compute and data. LoRA instead freezes the original weights and trains small, low-rank update matrices injected into specific layers, reducing the trainable parameters and memory needed at some cost in achievable adaptation capacity."
+  },
+  {
+    "question": "What is 'retrieval-aware fine-tuning'?",
+    "ground_truth": "Fine-tuning a model to more reliably follow a particular answer format or to better use retrieved context, while still relying on RAG for up-to-date, citable factual grounding — a complementary combination of the two techniques rather than a replacement for either."
+  },
+  {
+    "question": "What do GPTQ and AWQ each do differently as post-training quantization methods?",
+    "ground_truth": "GPTQ quantizes weights layer by layer, adjusting remaining unquantized weights to compensate for error introduced in already-quantized weights. AWQ observes that a small fraction of weights are disproportionately important, based on the magnitude of the activations they interact with, and preserves those at higher precision while aggressively quantizing the rest."
+  },
+  {
+    "question": "What does a GGUF quantization label like Q4_K_M indicate?",
+    "ground_truth": "It indicates the quantization scheme and bit-width used. Lower-numbered quantizations like Q4 are smaller and faster but lose more quality; higher ones like Q8 are closer to the original full-precision model but larger."
+  },
+  {
+    "question": "Roughly how much memory does a 4-bit quantized 7-billion-parameter model need compared to its 16-bit version?",
+    "ground_truth": "Roughly 4-5 GB, compared to the approximately 14 GB a 16-bit version would need."
+  },
+  {
+    "question": "Why should a quantized model used as an LLM-as-judge be spot-checked against the full-precision model?",
+    "ground_truth": "Because aggressive quantization can measurably degrade a model's reasoning ability, its faithfulness to long context, and its calibration, even when it still produces fluent-looking text, so equivalence to the full-precision model shouldn't be assumed."
+  },
+  {
+    "question": "What is reward hacking in the context of RLHF?",
+    "ground_truth": "A failure mode where the policy drifts far enough during reinforcement learning optimization that it starts exploiting quirks of the reward model rather than genuinely improving, which the KL-divergence penalty against the original SFT model is meant to discourage."
+  },
+  {
+    "question": "What is Constitutional AI?",
+    "ground_truth": "A technique where a model is trained to critique and revise its own outputs against a written set of principles, reducing reliance on large volumes of human-labeled preference data."
+  },
+  {
+    "question": "What is the purpose of red-teaming in alignment work?",
+    "ground_truth": "Humans or other models deliberately probe a model for harmful, biased, or otherwise undesired outputs so those failure modes can be fixed before deployment."
+  },
+  {
+    "question": "Can a model be well-aligned in a narrow sense but poorly aligned in a deeper sense?",
+    "ground_truth": "Yes. A model can follow instructions fluently, which is narrow alignment, while still being unhelpful, sycophantic, or confidently wrong, which is a deeper form of misalignment — this is part of why alignment evaluation typically requires multiple complementary methods rather than a single benchmark score."
+  },
+  {
+    "question": "What specific biases have been documented in LLM-as-judge evaluation?",
+    "ground_truth": "Some judge models have been shown to systematically prefer longer answers, or prefer whichever answer is presented first in a pairwise comparison, independent of actual quality."
+  },
+  {
+    "question": "What are common mitigations for LLM-as-judge bias?",
+    "ground_truth": "Using a stronger, ideally different, model as the judge than the one being evaluated, and validating judge scores against a sample of human ratings."
+  },
+  {
+    "question": "Why does RAGAS decompose RAG evaluation into separate metrics instead of one overall score?",
+    "ground_truth": "Because a RAG system can fail at retrieval or at generation independently, so isolating context precision and recall from faithfulness and answer relevancy shows which stage of the pipeline actually needs work."
+  },
+  {
+    "question": "At a technical level, how is the RAGAS faithfulness metric computed?",
+    "ground_truth": "By prompting an LLM judge with a decomposed, structured task, such as listing the individual factual claims made in an answer, and then checking each claim against the retrieved context."
+  },
+  {
+    "question": "Why does sycophancy in instruction-tuned or RLHF'd models count as a subtler form of unfaithfulness?",
+    "ground_truth": "Because the model produces an answer it infers the user wants to hear even when that conflicts with the evidence in context, rather than outright fabricating facts — a subtler failure mode than blatant factual fabrication."
+  },
+  {
+    "question": "How does requiring citation-generation help mitigate hallucination?",
+    "ground_truth": "Requiring the model to attribute specific claims to specific retrieved passages makes unsupported claims easier for a human, or an automated faithfulness check, to spot, since a claim with no attached citation is a clear signal to scrutinize."
+  },
+  {
+    "question": "What is post-hoc verification as a hallucination mitigation, and how does it relate to RAGAS?",
+    "ground_truth": "Running a second pass, often another LLM call, that checks each claim in a draft answer against the source context and flags or removes unsupported ones. This is essentially the same idea RAGAS's faithfulness metric formalizes for offline evaluation rather than live serving."
+  },
+  {
+    "question": "Why are long-tail facts more prone to hallucination?",
+    "ground_truth": "Facts that are rarely seen during pretraining are more likely to be misremembered or fabricated by the model than well-represented, frequently-repeated facts."
+  },
+  {
+    "question": "What is the shared architectural pattern across most modern vision-language models?",
+    "ground_truth": "A pretrained vision encoder converts an image into a sequence of visual features, a connector module projects those features into the same embedding space the language model expects, and the language model processes the combined sequence of visual and text tokens using standard Transformer machinery."
+  },
+  {
+    "question": "How does a Vision Transformer (ViT) process an image?",
+    "ground_truth": "It treats the image as a grid of fixed-size patches, such as 16x16 pixels, linearly projects each patch into an embedding, and processes the sequence of patch embeddings with standard Transformer self-attention layers, the same way a text Transformer processes a sequence of word or token embeddings."
+  },
+  {
+    "question": "Why are CLIP-pretrained vision encoders a popular choice for building VLMs?",
+    "ground_truth": "Because they were pretrained with a contrastive objective against paired text captions, their visual features already carry some alignment with language semantics before ever being connected to an LLM."
+  },
+  {
+    "question": "What is the tradeoff between a linear-projection connector and a resampler-based connector like Q-Former in a VLM?",
+    "ground_truth": "A linear projection preserves one visual token per image patch, which is simple and information-preserving but can produce a large number of visual tokens for a high-resolution image, consuming context window. A resampler uses a small set of learned query vectors that cross-attend into the full patch features and compress them into a fixed, smaller number of tokens regardless of resolution, trading spatial detail for context efficiency."
+  },
+  {
+    "question": "What are the typical training stages for a vision-language model?",
+    "ground_truth": "First, only the connector module is trained, with the vision encoder and LLM both frozen, on large-scale image-caption pairs. Then some or all of the LLM, and sometimes the vision encoder, is unfrozen and fine-tuned jointly on instruction-following and multi-turn visual dialogue data."
+  },
+  {
+    "question": "What limitation of simple 'chain' abstractions does LangGraph specifically address?",
+    "ground_truth": "Chains are a fixed, linear sequence of steps. Many real applications, especially agentic ones, need loops, conditional branching, and the ability to revisit earlier steps based on intermediate results, none of which a straight-line chain can express cleanly."
+  },
+  {
+    "question": "What is a state schema in LangGraph?",
+    "ground_truth": "A developer-defined shape of the data that flows through the graph — for example a conversation history, a set of retrieved documents, or a scratchpad of intermediate reasoning — that each node reads and returns updates to."
+  },
+  {
+    "question": "How does LangGraph support human-in-the-loop workflows?",
+    "ground_truth": "A graph can pause execution at a designated node and wait for external approval or input before continuing, which is useful for reviewing a proposed action, like sending an email or executing a database write, before it actually happens."
+  },
+  {
+    "question": "What advantage does an explicit LangGraph state graph have over a single-prompt ReAct-style agent loop?",
+    "ground_truth": "The set of possible states and transitions is easier to reason about, test, and debug — a developer can unit-test an individual node in isolation or visualize the graph structure to audit what paths an agent could take — at the cost of more upfront structure than writing a single prompt."
+  },
+  {
+    "question": "What integration-complexity problem does MCP solve?",
+    "ground_truth": "Before a shared protocol, connecting an LLM application to N different tools or data sources required N different custom integrations. MCP turns this into an M-plus-N problem instead of an M-times-N problem, since any MCP-compatible client can talk to any MCP-compatible server without custom glue code for each pair."
+  },
+  {
+    "question": "What transport options does MCP support for client-server communication?",
+    "ground_truth": "Standard input/output (stdio) for a server running as a local subprocess on the same machine, or HTTP, including support for streaming responses, for a server running remotely — with messages exchanged as JSON-RPC in either case."
+  },
+  {
+    "question": "How does MCP's value proposition mirror the Language Server Protocol (LSP)?",
+    "ground_truth": "Just as one LSP-compatible language server works with any LSP-compatible editor instead of every editor needing bespoke language support, one MCP server implementation works with any MCP-compatible AI application without needing to know which specific application is calling it."
+  },
+  {
+    "question": "What security concern is specific to MCP deployments?",
+    "ground_truth": "A tool call from an MCP server can have real side effects, such as sending data externally or modifying files, so clients and users need visibility into what a server's tools can do, ideally with per-tool or per-action permissioning, and should be cautious connecting to untrusted MCP servers."
+  },
+  {
+    "question": "What is MVCC and why does PostgreSQL use it?",
+    "ground_truth": "Multi-Version Concurrency Control lets readers and writers operate concurrently without blocking each other: an update creates a new version of a row and marks the old version as no longer current, while transactions already in progress continue to see the row version that was current when they started."
+  },
+  {
+    "question": "Why is a GIN index used for PostgreSQL full-text search rather than a B-tree index?",
+    "ground_truth": "GIN is suited to data where a single column value contains multiple searchable elements, such as an array, a JSONB document, or the lexemes produced by full-text search, because it indexes each element separately and maps it back to the rows containing it — which is why tsvector/tsquery full-text search is backed by a GIN index."
+  },
+  {
+    "question": "What SQL capability does running vector search inside Postgres enable that a separate vector database would not?",
+    "ground_truth": "A single SQL query can combine an ANN vector search with ordinary relational filtering and joins, for example finding the most semantically similar chunks only among documents owned by a given user and tagged as published, instead of querying a vector database and a relational database separately and merging results in application code."
+  },
+  {
+    "question": "Why do production systems typically use a connection pooler like PgBouncer?",
+    "ground_truth": "Opening a new physical Postgres connection is relatively expensive because it forks a new backend process per connection, so a connection pooler reuses a smaller number of physical connections across many logical client requests rather than opening and closing a connection per query."
+  },
+  {
+    "question": "What is the difference between a 'hard label' and a 'soft label' in Hinton et al.'s knowledge distillation formulation?",
+    "ground_truth": "A hard label is the teacher's single top prediction. A soft label is the teacher's full output probability distribution over all possible outputs, which conveys which mistakes are 'reasonable' versus 'unreasonable' — information a single hard label throws away."
+  },
+  {
+    "question": "What role does the temperature parameter play in knowledge distillation?",
+    "ground_truth": "It softens the teacher's probability distribution, making the non-top probabilities larger and more informative, before computing the training loss against the student."
+  },
+  {
+    "question": "What is 'sequence-level' or 'black-box' distillation, and why is it useful when a teacher model is only available via API?",
+    "ground_truth": "It involves using a large model to generate a dataset of high-quality outputs, such as answers or reasoning traces, for many prompts, then fine-tuning a smaller model on that generated dataset with ordinary supervised fine-tuning. It only requires access to the teacher's text outputs rather than its internal probability distributions or weights, which matters when the teacher is only available behind an API."
+  },
+  {
+    "question": "What architectural changes have enabled extending LLM context length beyond a few thousand tokens?",
+    "ground_truth": "Positional encoding schemes that generalize better to unseen lengths, such as RoPE combined with scaling techniques; efficient attention implementations like FlashAttention that reduce the memory bandwidth cost of computing exact attention; and architectural variants like sliding-window or sparse/linear attention that trade some long-range modeling ability for sub-quadratic scaling in sequence length."
+  },
+  {
+    "question": "Does FlashAttention change attention's underlying quadratic compute cost?",
+    "ground_truth": "No. It reduces the memory bandwidth cost and practical memory and wall-clock cost by restructuring the computation, but it does not change attention's underlying quadratic compute cost in sequence length."
+  },
+  {
+    "question": "What is the practical relationship between context window size and retrieval quality in a RAG system?",
+    "ground_truth": "A bigger context window changes how many retrieved chunks can fit, but it does not remove the value of good retrieval and ranking — it is generally more reliable to retrieve fewer, precisely relevant chunks than to rely on a large context window to compensate for imprecise retrieval by including many chunks and hoping the model finds the right one."
+  },
+  {
+    "question": "Does the corpus contain any information about designing distributed consensus algorithms like Raft or Paxos?",
+    "ground_truth": "No, the provided context does not contain any information about distributed consensus algorithms, so a faithful answer should state that this is not covered rather than guessing."
   }
 ]
