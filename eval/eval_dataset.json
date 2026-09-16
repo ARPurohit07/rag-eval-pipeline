@@ -1,0 +1,130 @@
+[
+  {
+    "question": "Why does self-attention let a Transformer model long-range dependencies better than an RNN?",
+    "ground_truth": "Self-attention lets every token attend directly to every other token in a single layer, so relationships between distant tokens are captured in one hop, whereas an RNN has to pass information through many sequential steps, which limits parallelization and makes long-range dependencies harder to model."
+  },
+  {
+    "question": "What is the purpose of the scaling factor in scaled dot-product attention?",
+    "ground_truth": "The attention score (a dot product between a query and a key) is divided by the square root of the key dimension before the softmax, which keeps gradients stable."
+  },
+  {
+    "question": "Why is causal masking necessary when training a decoder-only language model?",
+    "ground_truth": "Causal masking sets the attention score from position i to any later position j > i to negative infinity before the softmax, which enforces that a token can only attend to itself and earlier tokens, so the model cannot look ahead at tokens it is supposed to predict, which is essential for correct training with teacher forcing and correct generation behavior."
+  },
+  {
+    "question": "Why is cosine similarity generally preferred over raw dot product for comparing text embeddings?",
+    "ground_truth": "Cosine similarity measures the angle between two vectors and ignores their magnitude, which makes similarity invariant to how long a document's embedding happens to be (which can vary with text length or encoder quirks), whereas raw dot product is affected by vector magnitude."
+  },
+  {
+    "question": "What is Matryoshka Representation Learning used for in embedding models?",
+    "ground_truth": "It trains a single embedding model so that truncating its output vector to a shorter prefix still yields a usable, if slightly less accurate, embedding, allowing one model to serve multiple storage and accuracy trade-offs."
+  },
+  {
+    "question": "What is the difference between HNSW and IVF indexes for approximate nearest neighbor search?",
+    "ground_truth": "HNSW is a graph-based index that builds a multi-layer graph connecting each vector to nearby neighbors and greedily walks the graph at query time, giving fast, high-recall search at the cost of higher memory and slower inserts. IVF is a clustering-based index that partitions vectors into clusters via k-means and only searches the closest clusters at query time, trading some recall for lower memory and faster inserts."
+  },
+  {
+    "question": "What distance operators does pgvector provide in PostgreSQL, and what does each compute?",
+    "ground_truth": "pgvector provides <-> for L2 (Euclidean) distance, <#> for negative inner product, and <=> for cosine distance."
+  },
+  {
+    "question": "What are the three main weaknesses of relying purely on a language model's parametric knowledge that RAG is designed to address?",
+    "ground_truth": "RAG addresses hallucination (models generate plausible but incorrect text when they lack reliable knowledge), staleness (a model's knowledge is frozen at its training cutoff while a retrieval corpus can be updated continuously), and the cost/specificity of fine-tuning a model to memorize a narrow or frequently-changing document set."
+  },
+  {
+    "question": "In a RAG pipeline, why can't good generation quality compensate for bad retrieval?",
+    "ground_truth": "If retrieval fails to surface the passage that actually contains the answer, the generator was never given the right information, so no amount of generation quality can recover the missing information. This is why RAG evaluation is typically decomposed into separate retrieval and generation metrics."
+  },
+  {
+    "question": "How does BM25 improve on plain TF-IDF?",
+    "ground_truth": "BM25 saturates term frequency with a parameter k1 so additional occurrences of a term add diminishing score, and it normalizes for document length with a parameter b so that longer documents are not scored higher simply for containing more words."
+  },
+  {
+    "question": "What kind of queries does sparse lexical retrieval like BM25 handle better than dense semantic retrieval?",
+    "ground_truth": "BM25 excels at queries containing specific identifiers, codes, product names, acronyms, or rare technical terms that an embedding model may not represent distinctly, because it matches exact tokens rather than relying on learned semantic similarity."
+  },
+  {
+    "question": "How does Reciprocal Rank Fusion combine BM25 and vector search results without needing to normalize their scores?",
+    "ground_truth": "RRF ignores the raw scores entirely and combines rankings instead: for each document it computes 1 / (k + rank) in each ranked list it appears in and sums this across lists, so a document ranked highly by either method, or by both, rises to the top without needing to compare incomparable score scales."
+  },
+  {
+    "question": "What is the difference between a bi-encoder and a cross-encoder in the context of retrieval and re-ranking?",
+    "ground_truth": "A bi-encoder encodes the query and each document independently into separate vectors and compares them afterward, which is used for first-stage retrieval. A cross-encoder feeds the query and a candidate document into the model together so it can attend between query and document tokens, producing a more accurate relevance score, but it is too slow to run over an entire corpus, so it is reserved for re-ranking a short candidate list."
+  },
+  {
+    "question": "Why is chunk overlap used when splitting documents into fixed-size chunks?",
+    "ground_truth": "Overlap between consecutive chunks ensures content near a chunk boundary still appears whole in at least one chunk, mitigating the problem of a fixed-size split cutting a sentence or relevant information in half."
+  },
+  {
+    "question": "What is the trade-off between larger and smaller chunk sizes in a RAG system?",
+    "ground_truth": "Larger chunks give the generator more surrounding context per retrieved chunk but dilute the embedding since a long chunk covering multiple sub-topics gets one averaged embedding that may not closely match a focused query. Smaller chunks embed more precisely but risk fragmenting information that spans multiple sentences and increase the number of vectors to index."
+  },
+  {
+    "question": "When should you choose fine-tuning over RAG for adapting a language model?",
+    "ground_truth": "Fine-tuning is the right tool when the goal is to change how a model behaves - its tone, output format, or a narrow skill - rather than what it knows, since fine-tuning does not reliably give a model the ability to answer arbitrary questions about a corpus's long tail of specific details the way retrieval does, and it offers no way to cite a source or update a single fact without retraining."
+  },
+  {
+    "question": "What is LoRA and why is it used instead of full fine-tuning?",
+    "ground_truth": "LoRA (Low-Rank Adaptation) is a parameter-efficient fine-tuning method that freezes the original model weights and trains small, low-rank update matrices injected into specific layers, dramatically reducing the number of trainable parameters and memory needed compared to full fine-tuning, at some cost in achievable adaptation capacity."
+  },
+  {
+    "question": "What is the difference between post-training quantization and quantization-aware training?",
+    "ground_truth": "Post-training quantization (PTQ) converts an already-trained model's weights to lower precision without further training, using a calibration dataset to determine scaling factors. Quantization-aware training (QAT) simulates the effect of quantization during training itself so the model adapts to quantization noise, typically achieving better quality at a given bit-width than PTQ but requiring a full or fine-tuning-scale training run."
+  },
+  {
+    "question": "What are the three stages of the classic RLHF pipeline?",
+    "ground_truth": "The three stages are: supervised fine-tuning (SFT) on high-quality example prompts and responses, reward model training on human preference rankings of multiple outputs, and reinforcement learning (commonly PPO) to optimize the SFT model to generate outputs the reward model scores highly, constrained by a KL-divergence penalty against the original SFT model."
+  },
+  {
+    "question": "How does Direct Preference Optimization (DPO) differ from the classic RLHF approach?",
+    "ground_truth": "DPO re-expresses the RLHF objective as a classification-style loss directly over pairs of preferred and dispreferred responses, so the model can be trained on human preference data with ordinary supervised-learning-style gradient descent, without training a separate reward model or running reinforcement learning at all, making it simpler to implement and more stable to train than PPO-based RLHF."
+  },
+  {
+    "question": "What do the RAGAS metrics context precision and context recall each measure?",
+    "ground_truth": "Context precision measures what fraction of the retrieved chunks are actually relevant to the question, penalizing a retriever that pads results with irrelevant passages. Context recall measures whether the retrieved chunks, taken together, contain all the information present in a reference answer, penalizing a retriever that missed something necessary."
+  },
+  {
+    "question": "How does the RAGAS faithfulness metric detect hallucination in a RAG system's answer?",
+    "ground_truth": "Faithfulness measures whether every claim in the generated answer is actually supported by the retrieved context, by decomposing the answer into individual claims and checking each one against the context, specifically targeting hallucination that happens even when relevant context was retrieved."
+  },
+  {
+    "question": "Why are BLEU and ROUGE considered a poor fit for evaluating open-ended answers from modern LLMs?",
+    "ground_truth": "BLEU and ROUGE compare generated text against a reference based on overlapping n-grams, which penalizes valid paraphrases that use different wording than the reference and rewards superficial word overlap even when the meaning is wrong, so two equally correct answers can share almost no n-grams while an answer sharing many n-grams could still differ in a critical fact."
+  },
+  {
+    "question": "What is the difference between intrinsic and extrinsic hallucination in language models?",
+    "ground_truth": "Intrinsic hallucination happens when a model contradicts information actually given to it in its own context, such as inserting a detail a summarized document never stated. Extrinsic hallucination happens when a model asserts something about the world that cannot be verified against, or is contradicted by, its provided context or reliable external sources."
+  },
+  {
+    "question": "What is the 'lost in the middle' effect in long-context language models?",
+    "ground_truth": "It is an empirical pattern where retrieval accuracy for a fact placed near the beginning or end of a long context is measurably higher than for the same fact placed in the middle, even though the fact is technically present, meaning a large context window does not guarantee a model uses all of it equally well."
+  },
+  {
+    "question": "In a vision-language model, what is the role of the connector module between the vision encoder and the language model?",
+    "ground_truth": "The connector module projects the visual features produced by the vision encoder into the same embedding space the language model expects, so the language model can process the combined sequence of visual and text tokens using the same Transformer machinery used for text alone."
+  },
+  {
+    "question": "Why does LangGraph use an explicit state graph instead of a linear chain for agentic workflows?",
+    "ground_truth": "A linear chain is a fixed, straight-line sequence of steps, but many real applications, especially agentic ones, need loops, conditional branching, and the ability to revisit earlier steps based on intermediate results, none of which a straight-line chain can express cleanly. An explicit state graph makes control flow, including loops and conditional routing, declared upfront as edges in a graph."
+  },
+  {
+    "question": "What are the three primitives an MCP server can expose?",
+    "ground_truth": "An MCP server can expose tools (callable functions the model can invoke to take an action or fetch information), resources (addressable, side-effect-free pieces of data a client can read as context), and prompts (reusable, parameterized prompt templates)."
+  },
+  {
+    "question": "Why does Postgres use MVCC, and what operational concern does it create?",
+    "ground_truth": "MVCC (Multi-Version Concurrency Control) lets readers and writers operate concurrently without blocking each other by creating a new row version on update rather than locking the row, while in-progress transactions continue to see the version current when they started. This creates the operational concern of bloat from dead row versions no longer visible to any active transaction, which periodic vacuuming reclaims."
+  },
+  {
+    "question": "How does knowledge distillation differ from quantization as a model compression technique?",
+    "ground_truth": "Quantization reduces the numerical precision of an existing model's weights, while distillation trains a genuinely smaller student model, often with fewer parameters or a different architecture, using a larger teacher model's outputs as a training signal. The two are complementary and can be applied together."
+  },
+  {
+    "question": "What is a 'soft label' in the classic Hinton et al. knowledge distillation formulation, and why is it more informative than a hard label?",
+    "ground_truth": "A soft label is the teacher's full output probability distribution over all possible outputs rather than just its single top prediction. It is more informative because the relative ranking and magnitudes of the non-top probabilities convey which mistakes are 'reasonable' versus 'unreasonable', information a single hard label throws away."
+  },
+  {
+    "question": "Does a system based on the corpus support quantum computing hardware design?",
+    "ground_truth": "The provided context does not contain any information about quantum computing hardware design, so a faithful answer should state that this is not covered rather than guessing."
+  }
+]
